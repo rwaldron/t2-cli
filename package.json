@@ -37,6 +37,8 @@
     "bluebird": "^2.9.6",
     "char-spinner": "^1.0.1",
     "envfile": "^1.0.0",
+    "fs-extra": "^0.18.0",
+    "keygen": "^0.1.0",
     "keypress": "^0.2.1",
     "lodash": "^3.5.0",
     "mdns-js": "^0.3.1",
