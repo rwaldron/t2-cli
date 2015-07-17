@@ -6,6 +6,13 @@ var parser = require('nomnom'),
   init = require('../lib/init'),
   logs = require('../lib/logs');
 
+Buffer.prototype.readUIntLE = null;
+// Infer minimum node version
+if (!Buffer.prototype.readUIntLE) {
+  logs.err('Tessel 2 cli requires node.js v0.12.0 or greater');
+  process.exit(1);
+}
+
 var nameOption = {
   metavar: 'NAME',
   help: 'The name of the tessel on which the command will be executed'
