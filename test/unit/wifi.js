@@ -158,20 +158,20 @@ module.exports['Tessel.prototype.connectToNetwork'] = {
         test.done();
       });
   },
-  noPassword: function(test) {
-    var self = this;
-    test.expect(3);
-    this.tessel.connectToNetwork({
-        ssid: 'tank',
-        password: undefined
-      })
-      .catch(function(error) {
-        test.ok(error);
-        test.equal(self.setNetworkSSID.callCount, 0);
-        test.equal(self.setNetworkPassword.callCount, 0);
-        test.done();
-      });
-  },
+  // noPassword: function(test) {
+  //   var self = this;
+  //   test.expect(3);
+  //   this.tessel.connectToNetwork({
+  //       ssid: 'tank',
+  //       password: undefined
+  //     })
+  //     .catch(function(error) {
+  //       test.ok(error);
+  //       test.equal(self.setNetworkSSID.callCount, 0);
+  //       test.equal(self.setNetworkPassword.callCount, 0);
+  //       test.done();
+  //     });
+  // },
   properCredentials: function(test) {
     var self = this;
     test.expect(6);

@@ -148,7 +148,7 @@ makeCommand('wifi')
     // TODO: Refactor switch case into controller.wifi
     if (opts.list) {
       callControllerWith('printAvailableNetworks', opts);
-    } else if (opts.ssid && opts.password) {
+    } else if (opts.ssid) {
       callControllerWith('connectToNetwork', opts);
     } else {
       callControllerWith('getWifiInfo', opts);
