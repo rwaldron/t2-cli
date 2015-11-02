@@ -361,6 +361,44 @@ exports['tarBundle'] = {
     done();
   },
 
+  tesselIgnore: function(test) {
+    test.expect(22);
+
+    var target = 'test/unit/fixtures/slim';
+    var entryPoint = 'index.js';
+    var tesselignore = path.join(target, '.tesselignore');
+    var fileToIgnore = path.join(target, 'mock-foo.js');
+    var slimPath = '__tessel_program__.js';
+
+    this.glob.restore();
+    this.glob = sandbox.stub(deploy, 'glob', function(pattern, options, callback) {
+      test.equal(options.dot, true);
+      process.nextTick(function() {
+        callback(null, [tesselignore]);
+      });
+    });
+
+    // This is necessary because the path in which the tests are being run might
+    // not be the same path that this operation occurs within.
+    this.globSync.restore();
+    this.globSync = sandbox.stub(deploy.glob, 'sync', function() {
+      return [fileToIgnore];
+    });
+
+    deploy.tarBundle({
+      target: target,
+      resolvedEntryPoint: entryPoint,
+      slimPath: slimPath,
+      slim: true,
+    }).then(function() {
+
+      console.log(this.globSync.args);
+
+      test.done();
+    }.bind(this));
+  },
+
+
   full: function(test) {
     test.expect(11);
 
