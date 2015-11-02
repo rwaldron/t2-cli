@@ -362,24 +362,15 @@ exports['tarBundle'] = {
   },
 
   tesselIgnore: function(test) {
-    test.expect(22);
+    test.expect(2);
 
-    var target = 'test/unit/fixtures/slim';
+    var target = 'test/unit/fixtures/ignore';
     var entryPoint = 'index.js';
-    var tesselignore = path.join(target, '.tesselignore');
+    // var tesselignore = path.join(target, '.tesselignore');
     var fileToIgnore = path.join(target, 'mock-foo.js');
     var slimPath = '__tessel_program__.js';
 
     this.glob.restore();
-    this.glob = sandbox.stub(deploy, 'glob', function(pattern, options, callback) {
-      test.equal(options.dot, true);
-      process.nextTick(function() {
-        callback(null, [tesselignore]);
-      });
-    });
-
-    // This is necessary because the path in which the tests are being run might
-    // not be the same path that this operation occurs within.
     this.globSync.restore();
     this.globSync = sandbox.stub(deploy.glob, 'sync', function() {
       return [fileToIgnore];
@@ -392,7 +383,16 @@ exports['tarBundle'] = {
       slim: true,
     }).then(function() {
 
-      console.log(this.globSync.args);
+      // There are only 4 valid rules. (2 in each .tesselignore)
+      // The empty line MUST NOT create a pattern entry.
+      // The comment line MUST NOT create a pattern entry.
+      test.equal(this.globSync.callCount, 4);
+      test.deepEqual(this.globSync.args, [
+        [ 'a/**/*.*', { cwd: 'test/unit/fixtures/ignore' } ],
+        [ 'mock-foo.js', { cwd: 'test/unit/fixtures/ignore' } ],
+        [ 'nested/b/**/*.*', { cwd: 'test/unit/fixtures/ignore' } ],
+        [ 'nested/file.js', { cwd: 'test/unit/fixtures/ignore' } ]
+      ]);
 
       test.done();
     }.bind(this));
