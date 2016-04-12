@@ -15,7 +15,7 @@ updateNotifier({
 
 // Internal
 var controller = require('../lib/controller');
-var crashReporter = require('../lib/crash_reporter');
+var CrashReporter = require('../lib/crash_reporter');
 var init = require('../lib/init');
 var logs = require('../lib/logs');
 var drivers = require('./tessel-install-drivers');
@@ -78,7 +78,29 @@ parser.command('install-drivers')
   })
   .help('Install drivers');
 
-var reporter = parser.command('crash-reporter')
+parser.command('crash-reporter')
+  .callback(opts => {
+    // t2 crash-reporter --on
+    if (opts.on) {
+      return CrashReporter.on().then(() => {
+        // t2 crash-reporter --on --test
+        if (opts.test) {
+          CrashReporter.test().then(module.exports.closeSuccessfulCommand);
+        }
+      }).then(module.exports.closeSuccessfulCommand, module.exports.closeFailedCommand);
+    } else if (opts.off) {
+    // t2 crash-reporter --on
+      return CrashReporter.off()
+        .then(module.exports.closeSuccessfulCommand, module.exports.closeFailedCommand);
+    }
+
+    // t2 crash-reporter --test
+    if (opts.test) {
+      // not handling failures, as we want to trigger a crash
+      CrashReporter.test()
+        .then(module.exports.closeSuccessfulCommand);
+    }
+  })
   .option('off', {
     flag: true,
     help: 'Disable the Crash Reporter.'
@@ -86,28 +108,11 @@ var reporter = parser.command('crash-reporter')
   .option('on', {
     flag: true,
     help: 'Enable the Crash Reporter.'
-  });
-
-if (process.env.DEV_MODE === 'true') {
-  reporter.option('test', {
+  })
+  .option('test', {
     flag: true,
     help: 'Test the Crash Reporter.'
   });
-}
-
-reporter.callback(opts => {
-  if (opts.test) {
-    // not handling failures, as we want to trigger a crash
-    crashReporter.testSubmit()
-      .then(module.exports.closeSuccessfulCommand);
-  } else if (opts.on) {
-    crashReporter.turnOn()
-      .then(module.exports.closeSuccessfulCommand, module.exports.closeFailedCommand);
-  } else if (opts.off) {
-    crashReporter.turnOff()
-      .then(module.exports.closeSuccessfulCommand, module.exports.closeFailedCommand);
-  }
-});
 
 parser.command('provision')
   .callback(callControllerCallback('provisionTessel'))
