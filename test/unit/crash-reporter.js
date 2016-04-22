@@ -10,6 +10,32 @@ exports['CrashReporter'] = {
     test.equal(typeof CrashReporter.submit, 'function');
     test.equal(typeof CrashReporter.test, 'function');
     test.done();
+  },
+
+  noProcessExceptionOrRejectionHandlers: function(test) {
+    test.expect(2);
+
+    var expect = process.env.CI ? 0 : 2;
+    var tally = 0;
+
+    Object.keys(process._events).forEach(key => {
+      if (Array.isArray(process._events[key])) {
+        process._events[key].forEach(handler => {
+          if (handler.isCrashHandler) {
+            tally++;
+          }
+        });
+      } else {
+        if (process._events[key].isCrashHandler) {
+          tally++;
+        }
+      }
+    });
+
+    test.equal(tally, expect);
+
+    test.equal(true, false);
+    test.done();
   }
 };
 
