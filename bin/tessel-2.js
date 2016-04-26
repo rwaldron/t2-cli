@@ -92,7 +92,7 @@ parser.command('crash-reporter')
         }
       }).then(module.exports.closeSuccessfulCommand, module.exports.closeFailedCommand);
     } else if (opts.off) {
-      // t2 crash-reporter --on
+      // t2 crash-reporter --off
       return CrashReporter.off()
         .then(module.exports.closeSuccessfulCommand, module.exports.closeFailedCommand);
     }
@@ -101,6 +101,11 @@ parser.command('crash-reporter')
     if (opts.test) {
       // not handling failures, as we want to trigger a crash
       CrashReporter.test()
+        .then(module.exports.closeSuccessfulCommand);
+    }
+
+    if (!opts.test && !opts.on && !opts.off) {
+      CrashReporter.status()
         .then(module.exports.closeSuccessfulCommand);
     }
   })
@@ -115,7 +120,8 @@ parser.command('crash-reporter')
   .option('test', {
     flag: true,
     help: 'Test the Crash Reporter.'
-  });
+  })
+  .help('See Crash Reporter status');
 
 parser.command('provision')
   .callback(callControllerCallback('provisionTessel'))
