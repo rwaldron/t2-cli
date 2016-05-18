@@ -554,7 +554,7 @@ module.exports.closeFailedCommand = function(status, options) {
   }
 
   log.spinner.stop();
-  process.exit(options.code || status.code || code);
+  process.exit(options.code || (status && status.code) || code);
 };
 
 
