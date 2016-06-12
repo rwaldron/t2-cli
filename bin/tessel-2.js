@@ -140,14 +140,14 @@ parser.command('provision')
   })
   .help('Authorize your computer to control the USB-connected Tessel');
 
-parser.command('unbrick')
-  .callback(callControllerCallback('unbrickTessel'))
+parser.command('restore')
+  .callback(callControllerCallback('restoreTessel'))
   .option('openwrt', {
     abbr: 'o',
     flag: true,
     help: 'Restore a factory version of OpenWrt'
   })
-  .help('Unbrick your Tessel by restoring to factory settings.');
+  .help('Restore your Tessel by installing the factory version of OpenWrt.');
 
 makeCommand('restart')
   .callback(options => {
